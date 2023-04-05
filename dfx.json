@@ -1,22 +1,9 @@
 {
   "canisters": {
-    "rust_canister_backend": {
-      "candid": "src/rust_canister_backend/rust_canister_backend.did",
-      "package": "rust_canister_backend",
-      "type": "rust"
-    },
-    "rust_canister_frontend": {
-      "dependencies": [
-        "rust_canister_backend"
-      ],
-      "frontend": {
-        "entrypoint": "src/rust_canister_frontend/src/index.html"
-      },
-      "source": [
-        "src/rust_canister_frontend/assets",
-        "dist/rust_canister_frontend/"
-      ],
-      "type": "assets"
+    "backend": {
+      "type": "rust",
+      "package": "backend",
+      "candid": "src/backend/canister.did"
     }
   },
   "defaults": {
