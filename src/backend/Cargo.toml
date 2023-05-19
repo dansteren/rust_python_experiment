@@ -12,3 +12,8 @@ crate-type = ["cdylib"]
 candid = "0.8.4"
 ic-cdk = "0.7.4"
 ic-cdk-macros = "0.6.10"
+rustpython = { git = "https://github.com/RustPython/RustPython", rev = "c7faae9b22ce31a3ba1f2cc1cd3ad759b54ce100"}
+rustpython-vm = { git = "https://github.com/RustPython/RustPython", rev = "c7faae9b22ce31a3ba1f2cc1cd3ad759b54ce100"}
+rustpython-stdlib = { git = "https://github.com/RustPython/RustPython", rev = "c7faae9b22ce31a3ba1f2cc1cd3ad759b54ce100"}
+rustpython-derive = { git = "https://github.com/RustPython/RustPython", rev = "c7faae9b22ce31a3ba1f2cc1cd3ad759b54ce100"}
+rustpython-compiler-core = { git = "https://github.com/RustPython/RustPython", rev = "c7faae9b22ce31a3ba1f2cc1cd3ad759b54ce100"}
