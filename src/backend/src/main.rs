@@ -1,7 +1,14 @@
+use indoc::indoc;
+use or_exit::OrExit;
 use rustpython_derive::{pyclass, PyPayload};
-use rustpython_vm::{
-    class::PyClassImpl, convert::ToPyObject, Interpreter, PyResult, VirtualMachine,
-};
+use rustpython_vm::{class::PyClassImpl, Interpreter, PyResult, VirtualMachine};
+
+mod or_exit;
+
+const PYTHON_SOURCE_CODE: &str = indoc! {r#"
+    a = ic.my_native_rust_method()
+    print("The return value of ic.my_native_rust_method is:", a)
+"#};
 
 #[pyclass(module = false, name = "ic")]
 #[derive(Debug, PyPayload)]
@@ -11,7 +18,8 @@ impl Ic {
     #[pymethod]
     fn my_native_rust_method(&self, vm: &VirtualMachine) -> PyResult {
         println!("The ic.my_native_rust_method method was called");
-        Err(vm.new_value_error("this is an exception!".to_string()))
+        // Err(vm.new_value_error("this is an exception!".to_string()));
+        Err(vm.new_system_error("something went really wrong".to_string()))
     }
 }
 
@@ -23,23 +31,17 @@ fn main() {
 
     interpreter.enter(|vm| {
         Ic::make_class(&vm.ctx);
-        vm.builtins.set_attr("ic", vm.new_pyobj(Ic {}), vm).expect("should succeed");
+        vm.builtins
+            .set_attr("ic", vm.new_pyobj(Ic {}), vm)
+            .expect("should succeed");
 
-        let result = vm.run_code_string(
-            scope.clone(),
-            &format!("a = ic.my_native_rust_method()\nprint(\"The return value of ic.my_native_rust_method is:\", a)"),
-            "".to_owned(),
-        );
+        let python_return_value = vm
+            .run_code_string(scope.clone(), PYTHON_SOURCE_CODE, "".to_owned())
+            .or_exit(vm);
 
-        match result {
-            Ok(ok_value) => println!(
-                "Called ic.accept_message and got back an OK value: {}",
-                ok_value.class().name().to_string()
-            ),
-            Err(_err_value) => {
-                let err_string = _err_value.to_pyobject(vm).str(vm).unwrap();
-                println!("Called ic.accept_message and got back an Err value: {}", err_string )
-            }
-        }
+        println!(
+            "Called ic.accept_message and got back an OK value: {}",
+            python_return_value.class().name().to_string()
+        )
     });
 }
