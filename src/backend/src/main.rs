@@ -1,6 +1,6 @@
 use rustpython_derive::{pyclass, PyPayload};
 use rustpython_vm::{
-    class::PyClassImpl, convert::ToPyObject, Interpreter, PyObjectRef, VirtualMachine,
+    class::PyClassImpl, convert::ToPyObject, Interpreter, PyResult, VirtualMachine,
 };
 
 #[pyclass(module = false, name = "ic")]
@@ -9,10 +9,9 @@ struct Ic {}
 #[pyclass]
 impl Ic {
     #[pymethod]
-    fn my_native_rust_method(&self, vm: &VirtualMachine) -> PyObjectRef {
+    fn my_native_rust_method(&self, vm: &VirtualMachine) -> PyResult {
         println!("The ic.my_native_rust_method method was called");
-        let rust_string = "RUSTY!".to_string();
-        rust_string.to_pyobject(vm)
+        Err(vm.new_value_error("this is an exception!".to_string()))
     }
 }
 
@@ -37,7 +36,10 @@ fn main() {
                 "Called ic.accept_message and got back an OK value: {}",
                 ok_value.class().name().to_string()
             ),
-            Err(_err_value) => println!("Called ic.accept_message and got back an Err value"),
+            Err(_err_value) => {
+                let err_string = _err_value.to_pyobject(vm).str(vm).unwrap();
+                println!("Called ic.accept_message and got back an Err value: {}", err_string )
+            }
         }
     });
 }
