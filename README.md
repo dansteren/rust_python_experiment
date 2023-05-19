@@ -1,37 +1,22 @@
-# rust_canister
+# rust_python_experiment
 
-Welcome to your new rust_canister project and to the internet computer development community. By default, creating a new project adds this README and some template files to your project directory. You can edit these template files to customize your project and to include your own code to speed up the development cycle.
+A playground for testing out RustPython, especially trying to return Exceptions from a native rust function up to the Python layer.
 
-To get started, you might want to explore the project directory structure and the default configuration file. Working with this project in your development environment will not affect any production deployment or identity tokens.
+The setup of this example is that we create an `ic` object in python that calls rust code. This object has just one method: `my_native_rust_method`. Calling this method from the python code will result in getting a native rust value (converted to a python value of course).
 
-To learn more before you start working with rust_canister, see the following documentation available online:
+The main function instantiates the python vm, hooks up the ic object, and then runs this python code
 
-- [Quick Start](https://smartcontracts.org/docs/quickstart/quickstart-intro.html)
-- [SDK Developer Tools](https://smartcontracts.org/docs/developers-guide/sdk-guide.html)
-- [Rust Canister Devlopment Guide](https://smartcontracts.org/docs/rust-guide/rust-intro.html)
-- [ic-cdk](https://docs.rs/ic-cdk)
-- [ic-cdk-macros](https://docs.rs/ic-cdk-macros)
-- [Candid Introduction](https://smartcontracts.org/docs/candid-guide/candid-intro.html)
-- [JavaScript API Reference](https://erxue-5aaaa-aaaab-qaagq-cai.raw.ic0.app)
-
-If you want to start working on your project right away, you might want to try the following commands:
-
-```bash
-cd rust_canister/
-dfx help
-dfx canister --help
+```python
+a = ic.my_native_rust_method()
+print("The return value of ic.my_native_rust_method is:", a)
 ```
 
-## Running the project locally
+Running this example with `cargo run` results in the following output:
 
-If you want to test your project locally, you can use the following commands:
-
-```bash
-# Starts the replica, running in the background
-dfx start --background
-
-# Deploys your canisters to the replica and generates your candid interface
-dfx deploy
+```plaintext
+The ic.my_native_rust_method method was called
+The return value of ic.my_native_rust_method is: RUSTY!
+Called ic.accept_message and got back an OK value: NoneType
 ```
 
-Once the job completes, your application will be available at `http://localhost:4943?canisterId={asset_canister_id}`.
+So, we are able to return a regular value from Rust to Python. The question is, can `my_native_rust_method` raise an exception?
